@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartCanteen | College Canteen Ordering</title>
+    <meta
+      name="description"
+      content="SmartCanteen helps colleges manage canteen orders, digital tokens, live tracking, and faster pickup for students and faculty."
+    />
+    <style>
+      :root {
+        --bg: #f8f2ea;
+        --panel: #fffdfb;
+        --panel-soft: #f9f1e7;
+        --primary: #7a5337;
+        --primary-dark: #5e3c2c;
+        --primary-soft: #f0e2d0;
+        --accent: #d9a35b;
+        --accent-soft: #f7ebd7;
+        --text: #2d211c;
+        --muted: #67564d;
+        --line: #ebd9c9;
+        --success: #2f8f63;
+        --warning: #d28b1f;
+        --danger: #c86649;
+        --shadow: 0 20px 50px rgba(58, 36, 21, 0.09);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .container {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .section {
+        padding: 96px 0;
+      }
+
+      .section-head {
+        margin: 0 auto 42px;
+        max-width: 720px;
+        text-align: center;
+      }
+
+      .section-head .eyebrow {
+        display: inline-block;
+        margin-bottom: 12px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .section-head h2 {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 3rem);
+        letter-spacing: -0.05em;
+        line-height: 1.12;
+      }
+
+      .section-head p {
+        margin: 14px auto 0;
+        color: var(--muted);
+        font-size: 1.04rem;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(247, 243, 238, 0.9);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(17, 24, 39, 0.05);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 78px;
+        gap: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+
+      .brand-mark {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        color: #fff;
+        box-shadow: 0 12px 24px rgba(94, 60, 44, 0.2);
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .nav-links a {
+        transition: color 0.2s ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a:focus-visible {
+        color: var(--primary-dark);
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        border-radius: 999px;
+        padding: 0.9rem 1.45rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      }
+
+      .btn:hover,
+      .btn:focus-visible {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        color: #fff;
+        box-shadow: 0 12px 28px rgba(94, 60, 44, 0.2);
+      }
+
+      .btn-secondary {
+        background: #fff;
+        color: var(--text);
+        border: 1px solid var(--line);
+      }
+
+      .btn-ghost {
+        background: rgba(255,255,255,0.7);
+        color: var(--primary-dark);
+        border: 1px solid rgba(94, 60, 44, 0.1);
+      }
+
+      .btn-admin {
+        background: transparent;
+        color: var(--primary-dark);
+        border: 1px solid rgba(94, 60, 44, 0.12);
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .nav-toggle {
+        display: none;
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      .nav-toggle span,
+      .nav-toggle::before,
+      .nav-toggle::after {
+        content: "";
+        display: block;
+        width: 20px;
+        height: 2px;
+        margin: 5px auto;
+        border-radius: 999px;
+        background: var(--text);
+        transition: transform 0.2s ease;
+      }
+
+      .hero {
+        padding: 64px 0 42px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 52px;
+        align-items: center;
+      }
+
+      .hero-copy h1 {
+        margin: 0;
+        font-size: clamp(2.8rem, 5vw, 5rem);
+        line-height: 0.96;
+        letter-spacing: -0.06em;
+      }
+
+      .hero-copy .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+        font-size: 0.76rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 800;
+        margin-bottom: 18px;
+      }
+
+      .hero-copy p {
+        max-width: 620px;
+        margin: 20px 0 0;
+        font-size: 1.12rem;
+        color: var(--muted);
+      }
+
+      .hero-actions {
+        margin-top: 28px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(130px, 1fr));
+        gap: 16px;
+        margin-top: 30px;
+      }
+
+      .stat-card {
+        padding: 18px 18px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid var(--line);
+        box-shadow: 0 14px 28px rgba(35, 50, 46, 0.04);
+      }
+
+      .stat-card strong {
+        display: block;
+        font-size: clamp(1.2rem, 2vw, 1.9rem);
+        letter-spacing: -0.05em;
+        margin-bottom: 2px;
+      }
+
+      .stat-card span {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .hero-visual {
+        position: relative;
+        min-height: 520px;
+      }
+
+      .food-figure {
+        position: relative;
+        width: min(100%, 520px);
+        margin-left: auto;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(17, 24, 39, 0.06);
+      }
+
+      .food-figure img {
+        width: 100%;
+        height: 620px;
+        object-fit: cover;
+      }
+
+      .floating-card {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(17, 24, 39, 0.06);
+        border-radius: 18px;
+        padding: 12px 16px;
+        box-shadow: 0 18px 28px rgba(15, 23, 42, 0.08);
+      }
+
+      .floating-card.top {
+        top: 42px;
+        right: -12px;
+      }
+
+      .floating-card.bottom {
+        bottom: 30px;
+        left: -8px;
+      }
+
+      .token-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #fff;
+      }
+
+      .token-pill.yellow {
+        background: linear-gradient(135deg, #f5bf52, #e99d2d);
+      }
+
+      .token-pill.green {
+        background: linear-gradient(135deg, #33b972, #1d8f5d);
+      }
+
+      .token-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .token-info strong {
+        font-size: 0.98rem;
+        letter-spacing: -0.02em;
+      }
+
+      .token-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      .status-dot.yellow {
+        background: var(--warning);
+      }
+
+      .status-dot.green {
+        background: var(--success);
+      }
+
+      .steps-grid,
+      .feature-grid,
+      .smart-grid,
+      .menu-grid,
+      .cta-grid {
+        display: grid;
+        gap: 22px;
+      }
+
+      .steps-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .step-card {
+        position: relative;
+        padding: 28px 22px 26px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: 0 16px 28px rgba(15, 23, 42, 0.03);
+      }
+
+      .step-card::before {
+        content: "";
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        top: 0;
+        height: 4px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--primary), rgba(19, 138, 102, 0.15));
+      }
+
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+        font-weight: 800;
+        margin-bottom: 18px;
+      }
+
+      .step-card h3 {
+        margin: 0 0 10px;
+        font-size: 1.25rem;
+        letter-spacing: -0.03em;
+      }
+
+      .step-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .menu-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .food-card {
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: 0 16px 30px rgba(15, 23, 42, 0.03);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .food-card:hover,
+      .food-card:focus-within {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 32px rgba(15, 23, 42, 0.06);
+      }
+
+      .food-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .food-info {
+        padding: 18px 18px 20px;
+      }
+
+      .food-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .food-meta .tag {
+        display: inline-flex;
+        padding: 6px 10px;
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+        border-radius: 999px;
+        font-weight: 700;
+      }
+
+      .food-card h3 {
+        margin: 14px 0 10px;
+        font-size: 1.4rem;
+        letter-spacing: -0.04em;
+      }
+
+      .rating {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-weight: 700;
+        color: #7c5b14;
+        background: var(--accent-soft);
+        padding: 6px 9px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+      }
+
+      .food-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .price {
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        font-size: 1.2rem;
+      }
+
+      .food-footer .btn {
+        padding: 0.72rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .menu-cta {
+        margin-top: 26px;
+        text-align: center;
+      }
+
+      .smart-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .smart-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 24px 20px;
+        box-shadow: 0 12px 25px rgba(15, 23, 42, 0.025);
+      }
+
+      .icon-badge {
+        display: inline-grid;
+        place-items: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+        font-size: 1.45rem;
+      }
+
+      .smart-card h3 {
+        margin: 0 0 10px;
+        font-size: 1.3rem;
+        letter-spacing: -0.03em;
+      }
+
+      .smart-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .dashboard-shell {
+        background: linear-gradient(135deg, #1b2d2a 0%, #173e3b 100%);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 24px 28px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .dashboard-header h3 {
+        margin: 0;
+        color: #fff;
+        font-size: 1.5rem;
+        letter-spacing: -0.04em;
+      }
+
+      .live-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(46, 169, 109, 0.12);
+        color: #b8f1ce;
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
+
+      .live-chip .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #7ce0a6;
+        box-shadow: 0 0 0 6px rgba(124, 224, 166, 0.12);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      th,
+      td {
+        padding: 18px 28px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      th {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      td {
+        color: #edf7f6;
+        font-weight: 600;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+
+      .status-preparing {
+        background: rgba(243, 177, 91, 0.12);
+        color: #f8d37d;
+      }
+
+      .status-ready {
+        background: rgba(46, 169, 109, 0.12);
+        color: #9ce0b5;
+      }
+
+      .status-pending {
+        background: rgba(255, 255, 255, 0.08);
+        color: #dfe8e8;
+      }
+
+      .cta-banner {
+        padding: 32px;
+        border-radius: 28px;
+        background: linear-gradient(135deg, #123f36, #0d6b52);
+        color: #fff;
+        box-shadow: var(--shadow);
+      }
+
+      .cta-banner-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .cta-banner h3 {
+        margin: 0 0 8px;
+        font-size: clamp(1.8rem, 3vw, 2.7rem);
+        letter-spacing: -0.05em;
+      }
+
+      .cta-banner p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.02rem;
+      }
+
+      .footer {
+        padding: 36px 0 52px;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 0.8fr 0.8fr 1fr;
+        gap: 28px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-weight: 800;
+      }
+
+      .footer-brand .brand-mark {
+        width: 38px;
+        height: 38px;
+      }
+
+      .footer p,
+      .footer li,
+      .footer a,
+      .footer span {
+        color: var(--muted);
+      }
+
+      .footer h4 {
+        margin: 0 0 14px;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .footer ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .copyright {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 980px) {
+        .hero-grid,
+        .menu-grid,
+        .smart-grid,
+        .steps-grid,
+        .footer-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-visual {
+          min-height: 420px;
+        }
+
+        .food-figure {
+          max-width: 540px;
+          margin: 0 auto;
+        }
+
+        .footer-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .nav-links {
+          position: absolute;
+          left: 16px;
+          right: 16px;
+          top: 72px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+          padding: 18px 20px;
+          background: rgba(255, 255, 255, 0.98);
+          border: 1px solid var(--line);
+          border-radius: 18px;
+          box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-8px);
+          transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+        }
+
+        .nav-links.active {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .nav-toggle {
+          display: block;
+        }
+
+        .nav-actions .btn-ghost {
+          display: none;
+        }
+
+        .hero {
+          padding-top: 32px;
+        }
+
+        .stats-row,
+        .steps-grid,
+        .menu-grid,
+        .smart-grid,
+        .footer-grid,
+        .cta-banner-inner {
+          grid-template-columns: 1fr;
+        }
+
+        .cta-banner-inner {
+          display: grid;
+        }
+
+        .floating-card.top {
+          right: 18px;
+        }
+
+        .floating-card.bottom {
+          left: 10px;
+        }
+
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+
+        thead {
+          display: none;
+        }
+
+        tr {
+          padding: 12px 18px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        td {
+          border-bottom: none;
+          padding: 8px 0;
+        }
+
+        td::before {
+          content: attr(data-label) ": ";
+          display: inline-block;
+          min-width: 110px;
+          color: rgba(255, 255, 255, 0.7);
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          font-size: 0.74rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <a href="#home" class="brand" aria-label="SmartCanteen home">
+          <span class="brand-mark">S</span>
+          <span>SmartCanteen</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Main Navigation">
+          <a href="#home">Home</a>
+          <a href="#menu">Menu</a>
+          <a href="#how-it-works">How It Works</a>
+          <a href="#about">About</a>
+        </nav>
+
+        <div class="nav-actions">
+          <a href="admin.html" class="btn btn-admin">Admin</a>
+          <a href="student.html" class="btn btn-primary">Student</a>
+          <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="home">
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <div class="eyebrow">College canteen • digital ordering</div>
+            <h1>Skip the Queue. Order Smart.</h1>
+            <p>
+              Order your favorite meals from your college canteen, get a digital token,
+              and know exactly when your food is ready.
+            </p>
+
+            <div class="hero-actions">
+              <a href="student.html" class="btn btn-primary">Student </a>
+              <a href="student.html" class="btn btn-secondary">View Menu</a>
+            </div>
+
+            <div class="stats-row" aria-label="Quick stats">
+              <div class="stat-card">
+                <strong>500+</strong>
+                <span>Students</span>
+              </div>
+              <div class="stat-card">
+                <strong>50+</strong>
+                <span>Menu Items</span>
+              </div>
+              <div class="stat-card">
+                <strong>1000+</strong>
+                <span>Orders</span>
+              </div>
+              <div class="stat-card">
+                <strong>Fast</strong>
+                <span>Pickup</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-label="Smart canteen order preview">
+            <div class="food-figure">
+              <img
+                src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80"
+                alt="A fresh meal on a plate in a college canteen"
+              />
+            </div>
+
+            <div class="floating-card top">
+              <span class="token-pill yellow">A127</span>
+              <div class="token-info">
+                <strong>Token #A127</strong>
+                <span class="token-status"><span class="status-dot yellow"></span>Preparing</span>
+              </div>
+            </div>
+
+            <div class="floating-card bottom">
+              <span class="token-pill green">A126</span>
+              <div class="token-info">
+                <strong>Token #A126</strong>
+                <span class="token-status"><span class="status-dot green"></span>Ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="how-it-works">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">How it works</span>
+            <h2>Food in fewer steps, less waiting.</h2>
+            <p>
+              Built for the pace of campus life, SmartCanteen reduces queue stress while keeping the canteen organized and efficient.
+            </p>
+          </div>
+
+          <div class="steps-grid">
+            <article class="step-card">
+              <div class="step-number">01</div>
+              <h3>Browse</h3>
+              <p>Explore today's menu, see what's available, and choose your favorite meal in seconds.</p>
+            </article>
+
+            <article class="step-card">
+              <div class="step-number">02</div>
+              <h3>Order</h3>
+              <p>Add your food to the cart, pick a time slot if needed, and place your order instantly.</p>
+            </article>
+
+            <article class="step-card">
+              <div class="step-number">03</div>
+              <h3>Track</h3>
+              <p>Receive a digital token and watch live status updates from preparation to pickup.</p>
+            </article>
+
+            <article class="step-card">
+              <div class="step-number">04</div>
+              <h3>Collect</h3>
+              <p>Get a ready notification and pick up your meal from the counter without standing in line.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="menu">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">Popular picks</span>
+            <h2>Featured Menu</h2>
+            <p>Quick favorites from the canteen that students and faculty order most often.</p>
+          </div>
+
+          <div class="menu-grid">
+            <article class="food-card">
+              <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80" alt="Veg Chowmein" />
+              <div class="food-info">
+                <div class="food-meta">
+                  <span class="tag">Chinese</span>
+                  <span>Hot item</span>
+                </div>
+                <h3>Veg Chowmein</h3>
+                <div class="rating">★ 4.8</div>
+                <div class="food-footer">
+                  <span class="price">₹90</span>
+                  <button class="btn btn-primary">Add to Cart</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="food-card">
+              <img src="https://images.unsplash.com/photo-1613769049987-b31b641f25b1?auto=format&fit=crop&w=800&q=80" alt="Masala Dosa" />
+              <div class="food-info">
+                <div class="food-meta">
+                  <span class="tag">South Indian</span>
+                  <span>Fresh</span>
+                </div>
+                <h3>Masala Dosa</h3>
+                <div class="rating">★ 4.7</div>
+                <div class="food-footer">
+                  <span class="price">₹75</span>
+                  <button class="btn btn-primary">Add to Cart</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="food-card">
+              <img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80" alt="Veg Sandwich" />
+              <div class="food-info">
+                <div class="food-meta">
+                  <span class="tag">Quick Bite</span>
+                  <span>Popular</span>
+                </div>
+                <h3>Veg Sandwich</h3>
+                <div class="rating">★ 4.6</div>
+                <div class="food-footer">
+                  <span class="price">₹65</span>
+                  <button class="btn btn-primary">Add to Cart</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="food-card">
+              <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80" alt="Samosa" />
+              <div class="food-info">
+                <div class="food-meta">
+                  <span class="tag">Snacks</span>
+                  <span>Best seller</span>
+                </div>
+                <h3>Samosa</h3>
+                <div class="rating">★ 4.9</div>
+                <div class="food-footer">
+                  <span class="price">₹35</span>
+                  <button class="btn btn-primary">Add to Cart</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="food-card">
+              <img src="https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=800&q=80" alt="Cold Coffee" />
+              <div class="food-info">
+                <div class="food-meta">
+                  <span class="tag">Beverage</span>
+                  <span>Refreshing</span>
+                </div>
+                <h3>Cold Coffee</h3>
+                <div class="rating">★ 4.8</div>
+                <div class="food-footer">
+                  <span class="price">₹80</span>
+                  <button class="btn btn-primary">Add to Cart</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="food-card">
+              <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80" alt="Fried Rice" />
+              <div class="food-info">
+                <div class="food-meta">
+                  <span class="tag">Main Course</span>
+                  <span>Hearty</span>
+                </div>
+                <h3>Fried Rice</h3>
+                <div class="rating">★ 4.7</div>
+                <div class="food-footer">
+                  <span class="price">₹95</span>
+                  <button class="btn btn-primary">Add to Cart</button>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="menu-cta">
+            <a href="#menu" class="btn btn-secondary">View Full Menu →</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="about">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">Smart operations</span>
+            <h2>A Smarter Way to Run Your Canteen</h2>
+            <p>
+              Give your staff better visibility, reduce confusion, and create a smoother food experience for everyone on campus.
+            </p>
+          </div>
+
+          <div class="smart-grid">
+            <article class="smart-card">
+              <div class="icon-badge">🎫</div>
+              <h3>Digital Tokens</h3>
+              <p>Replace long physical queues with digital tokens and real-time status updates.</p>
+            </article>
+
+            <article class="smart-card">
+              <div class="icon-badge">⚡</div>
+              <h3>Live Order Tracking</h3>
+              <p>Track every order from cart to kitchen to pickup without confusion or delays.</p>
+            </article>
+
+            <article class="smart-card">
+              <div class="icon-badge">📊</div>
+              <h3>Sales Analytics</h3>
+              <p>See best-selling meals, revenue trends, and peak ordering hours in one view.</p>
+            </article>
+
+            <article class="smart-card">
+              <div class="icon-badge">🔔</div>
+              <h3>Ready Notifications</h3>
+              <p>Alert students and faculty when their order is prepared for collection.</p>
+            </article>
+
+            <article class="smart-card">
+              <div class="icon-badge">📦</div>
+              <h3>Availability Management</h3>
+              <p>Keep item availability updated to avoid sold-out confusion at the counter.</p>
+            </article>
+
+            <article class="smart-card">
+              <div class="icon-badge">📱</div>
+              <h3>QR-Based Ordering</h3>
+              <p>Let users order quickly from their phone using QR codes placed across campus.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">Live preview</span>
+            <h2>Current Orders</h2>
+            <p>Real-time canteen order feed showing token states and kitchen progress.</p>
+          </div>
+
+          <div class="dashboard-shell" aria-label="Current orders dashboard">
+            <div class="dashboard-header">
+              <h3>Kitchen Queue</h3>
+              <span class="live-chip"><span class="dot"></span> Live</span>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Token</th>
+                  <th>Order</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Token">A127</td>
+                  <td data-label="Order">Chowmein + Cold Coffee</td>
+                  <td data-label="Status"><span class="status-badge status-preparing">Preparing</span></td>
+                </tr>
+                <tr>
+                  <td data-label="Token">A128</td>
+                  <td data-label="Order">Masala Dosa</td>
+                  <td data-label="Status"><span class="status-badge status-ready">Ready</span></td>
+                </tr>
+                <tr>
+                  <td data-label="Token">A129</td>
+                  <td data-label="Order">Veg Sandwich</td>
+                  <td data-label="Status"><span class="status-badge status-pending">Pending</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="cta-banner">
+            <div class="cta-banner-inner">
+              <div>
+                <h3>Hungry? Your food is just a few clicks away.</h3>
+                <p>Fast pickup, smarter queue flow, and less waiting for every student and faculty member.</p>
+              </div>
+              <a href="student.html" class="btn btn-primary" style="background:#fff;color:var(--primary-dark);box-shadow:none;">Start Ordering</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-brand">
+              <span class="brand-mark">S</span>
+              <span>SmartCanteen</span>
+            </div>
+            <p>College canteen ordering and queue management built for faster service, happier students, and organized operations.</p>
+          </div>
+
+          <div>
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="#home">Home</a></li>
+              <li><a href="#menu">Menu</a></li>
+              <li><a href="#how-it-works">How It Works</a></li>
+              <li><a href="#about">About</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4>Contact</h4>
+            <ul>
+              <li><a href="mailto:hello@smartcanteen.com">hello@smartcanteen.com</a></li>
+              <li><a href="tel:+919876543210">+91 98765 43210</a></li>
+              <li>College Canteen</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4>College Canteen</h4>
+            <ul>
+              <li>Digital tokens</li>
+              <li>Live tracking</li>
+              <li>Faster pickup</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="copyright">© 2026 SmartCanteen</div>
+      </div>
+    </footer>
+
+    <script>
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+
+      if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => {
+          navLinks.classList.toggle('active');
+          const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+          navToggle.setAttribute('aria-expanded', String(!expanded));
+        });
+
+        navLinks.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            navToggle.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

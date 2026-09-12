@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartCanteen Student Portal</title>
+    <style>
+      :root {
+        --bg: #f8f2ea;
+        --panel: #fffdfb;
+        --paper: #f0e2d0;
+        --brown-900: #3a2415;
+        --brown-800: #5e3c2c;
+        --brown-700: #7a5337;
+        --brown-500: #a8774f;
+        --beige: #f4e8d8;
+        --line: #ecdac4;
+        --text: #2c211d;
+        --muted: #63544d;
+        --green: #2f8f63;
+        --green-soft: #ebf7f0;
+        --shadow: 0 22px 48px rgba(58,36,21,0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      button, input, select {
+        font: inherit;
+      }
+
+      .container {
+        width: min(1160px, calc(100% - 28px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        background: rgba(248,242,234,0.94);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(58,36,21,0.06);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .nav {
+        min-height: 74px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--brown-800), var(--brown-500));
+        border-radius: 12px;
+        color: white;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .nav-links a:hover { color: var(--brown-900); }
+
+      .page {
+        padding: 42px 0 80px;
+      }
+
+      .page-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 24px;
+      }
+
+      .panel {
+        background: rgba(255,255,255,0.82);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--paper);
+        color: var(--brown-800);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 18px 0 10px;
+        font-size: clamp(2.2rem, 4vw, 3.5rem);
+        letter-spacing: -0.06em;
+      }
+
+      .lead {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      input, select {
+        width: 100%;
+        padding: 0.92rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: white;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 0.95rem 1.4rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--brown-800), var(--brown-700));
+        color: white;
+      }
+
+      .btn-secondary {
+        background: var(--beige);
+        color: var(--brown-900);
+      }
+
+      .food-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 22px;
+      }
+
+      .food-card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+        cursor: pointer;
+      }
+
+      .food-card:hover { transform: translateY(-2px); }
+
+      .food-card.selected {
+        border-color: var(--brown-700);
+        box-shadow: 0 12px 24px rgba(122,83,55,0.12);
+      }
+
+      .food-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+
+      .food-card-info {
+        padding: 14px 14px 16px;
+      }
+
+      .food-card-info h3 {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+      }
+
+      .food-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--paper);
+        color: var(--brown-800);
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+
+      .price {
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
+
+      .order-summary {
+        display: grid;
+        gap: 16px;
+      }
+
+      .summary-box {
+        background: linear-gradient(135deg, #fff, #f8f0e6);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 20px;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(58,36,21,0.08);
+      }
+
+      .summary-row:last-child {
+        border-bottom: none;
+      }
+
+      .token-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 90px;
+        padding: 8px 12px;
+        background: var(--green-soft);
+        border-radius: 999px;
+        color: var(--green);
+        font-weight: 800;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        background: #f4efe8;
+        color: var(--brown-700);
+        border-radius: 999px;
+        font-weight: 800;
+      }
+
+      .order-time {
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .success-box {
+        margin-top: 16px;
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-weight: 700;
+        display: none;
+      }
+
+      .success-box.show {
+        display: block;
+      }
+
+      @media (max-width: 900px) {
+        .page-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .nav-links {
+          display: none;
+        }
+
+        .food-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <a href="index.html" class="brand" aria-label="SmartCanteen home">
+          <span class="brand-mark">S</span>
+          <span>SmartCanteen</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Student navigation">
+          <a href="#order-flow">Order</a>
+          <a href="#menu">Menu</a>
+          <a href="#track">Track</a>
+        </nav>
+
+        <a href="admin.html" class="btn btn-secondary">Admin</a>
+      </div>
+    </header>
+
+    <main class="page" id="order-flow">
+      <div class="container page-grid">
+        <section class="panel">
+          <span class="eyebrow">Student portal</span>
+          <h1>Choose your college and meal.</h1>
+          <p class="lead">Select your college, browse the canteen menu, and get a digital token for pickup.</p>
+
+          <div class="form-grid">
+            <label>
+              Select college
+              <select>
+                <option>Hillview College</option>
+                <option>Greenwood Institute</option>
+                <option>North Valley University</option>
+              </select>
+            </label>
+
+            <label>
+              Select canteen
+              <select>
+                <option>Campus Canteen</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="food-grid" id="menu">
+            <article class="food-card selected" data-name="Veg Chowmein" data-price="90">
+              <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80" alt="Veg Chowmein" />
+              <div class="food-card-info">
+                <div class="food-row">
+                  <span class="tag">Chinese</span>
+                  <span class="price">₹90</span>
+                </div>
+                <h3>Veg Chowmein</h3>
+              </div>
+            </article>
+
+            <article class="food-card" data-name="Masala Dosa" data-price="75">
+              <img src="https://images.unsplash.com/photo-1613769049987-b31b641f25b1?auto=format&fit=crop&w=800&q=80" alt="Masala Dosa" />
+              <div class="food-card-info">
+                <div class="food-row">
+                  <span class="tag">South Indian</span>
+                  <span class="price">₹75</span>
+                </div>
+                <h3>Masala Dosa</h3>
+              </div>
+            </article>
+
+            <article class="food-card" data-name="Veg Sandwich" data-price="65">
+              <img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80" alt="Veg Sandwich" />
+              <div class="food-card-info">
+                <div class="food-row">
+                  <span class="tag">Quick Bite</span>
+                  <span class="price">₹65</span>
+                </div>
+                <h3>Veg Sandwich</h3>
+              </div>
+            </article>
+
+            <article class="food-card" data-name="Cold Coffee" data-price="80">
+              <img src="https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=800&q=80" alt="Cold Coffee" />
+              <div class="food-card-info">
+                <div class="food-row">
+                  <span class="tag">Drink</span>
+                  <span class="price">₹80</span>
+                </div>
+                <h3>Cold Coffee</h3>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="panel order-summary" id="track">
+          <div class="summary-box">
+            <h2 style="margin:0 0 10px; font-size:2rem; letter-spacing:-0.05em;">Order Summary</h2>
+            <div class="summary-row">
+              <span>College</span>
+              <strong>Hillview College</strong>
+            </div>
+            <div class="summary-row">
+              <span>Canteen</span>
+              <strong>Campus Canteen</strong>
+            </div>
+            <div class="summary-row">
+              <span>Dish</span>
+              <strong id="selectedDish">Veg Chowmein</strong>
+            </div>
+            <div class="summary-row">
+              <span>Price</span>
+              <strong id="selectedPrice">₹90</strong>
+            </div>
+            <div class="summary-row">
+              <span>Estimated wait</span>
+              <span class="order-time">12 mins</span>
+            </div>
+            <div class="summary-row">
+              <span>Token</span>
+              <span class="token-pill">A127</span>
+            </div>
+            <div class="summary-row">
+              <span>Status</span>
+              <span class="status-badge">Preparing</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="orderBtn">Confirm Order</button>
+          <div class="success-box" id="successBox">Order placed successfully. Your token has been generated and is now in the waiting list.</div>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const cards = document.querySelectorAll('.food-card');
+      const selectedDish = document.getElementById('selectedDish');
+      const selectedPrice = document.getElementById('selectedPrice');
+      const orderBtn = document.getElementById('orderBtn');
+      const successBox = document.getElementById('successBox');
+
+      cards.forEach((card) => {
+        card.addEventListener('click', () => {
+          cards.forEach((item) => item.classList.remove('selected'));
+          card.classList.add('selected');
+
+          selectedDish.textContent = card.dataset.name;
+          selectedPrice.textContent = '₹' + card.dataset.price;
+        });
+      });
+
+      orderBtn.addEventListener('click', () => {
+        successBox.classList.add('show');
+        selectedDish.textContent = document.querySelector('.food-card.selected')?.dataset.name || 'Veg Chowmein';
+      });
+    </script>
+  </body>
+</html>
